@@ -2,6 +2,7 @@ package com.ecocivic.demo.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -11,18 +12,17 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // Secret key used to create JWT tokens
-    // We will move this to application.properties later.
-    private static final String SECRET_KEY =
-            "EcoCivicAISecretKeyForJwtAuthentication123456789";
+    // Read the signing secret from an environment variable.
+    @Value("${JWT_SECRET}")
+    private String secretKey;
 
     // Token validity: 24 hours
     private static final long EXPIRATION_TIME =
-            1000 * 60 * 60 * 24;
+            1000L * 60 * 60 * 24;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(
-                SECRET_KEY.getBytes(StandardCharsets.UTF_8)
+                secretKey.getBytes(StandardCharsets.UTF_8)
         );
     }
 
