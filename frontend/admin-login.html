@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EcoCivic AI - Admin Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f5132, #198754);
+        }
+
+        .login-container {
+            width: 400px;
+            max-width: 90%;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: #198754;
+            margin-bottom: 8px;
+        }
+
+        .admin-title {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #198754;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #198754;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #146c43;
+        }
+
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #198754;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="logo">EcoCivic AI</div>
+
+    <div class="admin-title">
+        Administrator Login
+    </div>
+
+    <form id="adminLoginForm">
+
+        <div class="form-group">
+            <label for="email">Admin Email</label>
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter admin email"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+                required
+            >
+        </div>
+
+        <button type="submit">
+            Login as Admin
+        </button>
+
+        <div id="message"></div>
+
+    </form>
+
+    <a href="login.html" class="back-link">
+        ← Back to User Login
+    </a>
+
+</div>
+
+<script src="config.js"></script>
+<script>
+    const adminLoginForm = document.getElementById("adminLoginForm");
+    const message = document.getElementById("message");
+
+    adminLoginForm.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        message.textContent = "Logging in...";
+        message.style.color = "#555";
+
+        try {
+
+            const response = await fetch(
+                `${CONFIG.API_BASE_URL}/users/login`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                message.textContent =
+                    result.error || "Invalid email or password.";
+                message.style.color = "red";
+                return;
+            }
+
+            /*
+             * IMPORTANT:
+             * Only users whose role is "admin"
+             * are allowed to continue.
+             */
+
+            if (!result || result.role !== "admin") {
+
+                message.textContent =
+                    "Access denied: Admin account required.";
+
+                message.style.color = "red";
+
+                return;
+            }
+
+            // Save admin information
+            localStorage.setItem(
+                "loggedInUser",
+                JSON.stringify(result)
+            );
+
+            message.textContent = "Admin login successful!";
+            message.style.color = "green";
+
+            // Open admin dashboard
+            setTimeout(function() {
+                window.location.href = "dashboard.html";
+            }, 500);
+
+        } catch (error) {
+
+            console.error("Admin login error:", error);
+
+            message.textContent =
+                "Unable to connect to server.";
+
+            message.style.color = "red";
+        }
+    });
+</script>
+
+</body>
+</html>

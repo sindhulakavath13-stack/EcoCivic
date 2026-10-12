@@ -1,0 +1,31 @@
+# Java / Spring Boot
+backend/target/
+backend/.idea/
+backend/*.class
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Local configuration
+**/application-local.properties
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backend secrets and local configuration
+backend/src/main/resources/application.properties
+
+# Old/duplicate project
+EcoCivic-AI-main/

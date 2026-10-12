@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EcoCivic AI - Authority Dashboard</title>
+
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div>
+            <h1>🌱 EcoCivic AI</h1>
+            <p>Authority Dashboard</p>
+        </div>
+
+        <div class="dashboard-label">
+            Sustainability Grievance Monitoring
+        </div>
+
+        <div id="loggedInUserInfo" class="logged-in-user">
+            Welcome, User
+        </div>
+
+        <button id="logoutBtn">
+            Logout
+        </button>
+    </header>
+
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-container">
+
+        <h2>Community Sustainability Overview</h2>
+
+        <p class="dashboard-description">
+            Monitor, analyze and prioritize sustainability-related
+            community grievances.
+        </p>
+
+
+        <!-- Summary Cards -->
+        <section class="summary-cards">
+
+            <div class="card">
+                <h3>Total Complaints</h3>
+                <p id="totalComplaints">0</p>
+            </div>
+
+            <div class="card">
+                <h3>High Priority</h3>
+                <p id="highPriority">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Pending</h3>
+                <p id="pendingComplaints">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Resolved</h3>
+                <p id="resolvedComplaints">0</p>
+            </div>
+
+        </section>
+
+
+        <!-- Overview Sections -->
+        <section class="overview-grid">
+
+            <div class="dashboard-panel">
+
+                <h3>Complaints by Category</h3>
+
+                <div id="categoryOverview">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                    <p>Data will appear here.</p>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-panel">
+
+                <h3>Priority Overview</h3>
+
+                <div id="priorityOverview">
+                    <canvas id="priorityChart"></canvas>
+                </div>
+                    <p>Data will appear here.</p>
+                </div>
+
+            </div>
+
+            <div class="dashboard-panel">
+                <h3>Complaints by Location</h3>
+                
+                <div id="locationOverview">
+                    <canvas id="locationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="dashboard-panel">
+                 <h3>Complaints by Sustainability Area</h3>
+                
+                 <div id="sustainabilityOverview">
+                    <canvas id="sustainabilityChart"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- Recent Complaints -->
+        <section class="dashboard-panel complaints-panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h3>Recent Complaints</h3>
+                    <p>Latest community sustainability grievances</p>
+
+                    <div class="search-container">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search complaints, ID, location, category..."
+                        >
+                    </div>
+                    
+                        <select id="categoryFilter">
+                            <option value="All">All Categories</option>
+                            <option value="Waste Management">Waste Management</option>
+                            <option value="Water & Sanitation">Water & Sanitation</option>
+                            <option value="Air & Noise Pollution">Air & Noise Pollution</option>
+                            <option value="Green Environment">Green Environment</option>
+                            <option value="Energy & Infrastructure">Energy & Infrastructure</option>
+                        </select>
+
+                        <select id="priorityFilter">
+                            <option value="All">All Priorities</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+
+                        <select id="statusFilter">
+                            <option value="All">All Statuses</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                        </select>
+
+                        <button id="clearFiltersBtn">
+                            Clear Filters
+                        </button>
+                    
+
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+                
+                <div id="resultCount" class="result-count">
+                    Showing 0 of 0 complaints
+                </div>
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Complaint</th>
+                            <th>Category</th>
+                            <th>Subcategory</th>
+                            <th>Priority</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="complaintsTable">
+
+                        <tr>
+                            <td colspan="6">
+                                No complaint data available.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    const storedAdmin =
+        localStorage.getItem("loggedInUser");
+
+    if (!storedAdmin) {
+
+        window.location.href = "admin-login.html";
+
+    } else {
+
+        try {
+
+            const adminUser =
+                JSON.parse(storedAdmin);
+
+            if (adminUser.role !== "admin") {
+
+                alert(
+                    "Access denied. Admin login required."
+                );
+
+                localStorage.removeItem(
+                    "loggedInUser"
+                );
+
+                window.location.href =
+                    "admin-login.html";
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Invalid login data:",
+                error
+            );
+
+            localStorage.removeItem(
+                "loggedInUser"
+            );
+
+            window.location.href =
+                "admin-login.html";
+        }
+    }
+</script>
+
+    <script src="config.js"></script>
+    <script src="dashboard.js"></script>
+
+
+    <!-- Complaint Details Modal -->
+<div id="complaintModal" class="modal">
+
+    <div class="modal-content">
+
+        <span id="closeModal" class="close">&times;</span>
+
+        <h2>Complaint Details</h2>
+
+        <div class="complaint-details">
+
+            <p>
+                <strong>Complaint:</strong>
+                <span id="detailComplaint">-</span>
+            </p>
+
+            <p>
+                <strong>Category:</strong>
+                <span id="detailCategory">-</span>
+            </p>
+
+            <p>
+                <strong>Subcategory:</strong>
+                <span id="detailSubcategory">-</span>
+            </p>
+
+            <p>
+                <strong>Priority:</strong>
+                <span id="detailPriority">-</span>
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                <span id="detailLocation">-</span>
+            </p>
+
+            <p>
+                <strong>Sustainability Area:</strong>
+                <span id="detailSustainability">-</span>
+            </p>
+
+            <p>
+                <strong>AI Summary:</strong>
+                <span id="detailSummary">-</span>
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                <span id="detailStatus">-</span>
+            </p>
+
+            <p>
+                <strong>Submitted:</strong>
+                <span id="detailCreatedAt">-</span>
+            </p>
+
+            <p>
+                <strong>Last Updated:</strong>
+                <span id="detailUpdatedAt">-</span>
+            </p>
+
+            <div class="detail-image-container">
+
+                <strong>Uploaded Image:</strong>
+
+                <br>
+
+                <img
+                    id="detailImage"
+                    src=""
+                    alt="Complaint Image"
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+
+</html>
