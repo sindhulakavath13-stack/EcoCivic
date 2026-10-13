@@ -91,15 +91,17 @@ public class ReportController {
     @Operation(summary = "Serve an uploaded report image")
     public ResponseEntity<Resource> serveImage(@PathVariable String filename) {
         try {
-            Path file = Paths.get("uploads").resolve(filename).normalize();
+            Path file = Paths.get("uploads").toAbsolutePath().normalize().resolve(filename).normalize();
             Resource resource = new UrlResource(file.toUri());
-            if (!resource.exists()) {
+            if (!resource.exists() || !resource.isReadable()) {
                 return ResponseEntity.notFound().build();
             }
+            String contentType = java.nio.file.Files.probeContentType(file);
+            MediaType mediaType = (contentType != null) ? MediaType.parseMediaType(contentType) : MediaType.IMAGE_JPEG;
             return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
+                    .contentType(mediaType)
                     .body(resource);
-        } catch (MalformedURLException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }

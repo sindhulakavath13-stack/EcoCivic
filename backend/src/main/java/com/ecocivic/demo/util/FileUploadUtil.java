@@ -48,11 +48,14 @@ public final class FileUploadUtil {
         String uniqueName = UUID.randomUUID() + extension;
 
         try {
-            Path uploadPath = Paths.get(AppConstants.UPLOAD_DIR);
+            Path uploadPath = Paths.get(AppConstants.UPLOAD_DIR).toAbsolutePath().normalize();
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-            file.transferTo(uploadPath.resolve(uniqueName).toFile());
+            Path targetFile = uploadPath.resolve(uniqueName);
+            try (var inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
             throw new BadRequestException("Failed to save uploaded file: " + e.getMessage());
         }
