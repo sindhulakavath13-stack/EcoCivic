@@ -25,7 +25,7 @@ frontend/build/
 Thumbs.db
 
 # Backend secrets and local configuration
-backend/src/main/resources/application.properties
+#backend/src/main/resources/application.properties
 
 # Old/duplicate project
 EcoCivic-AI-main/
